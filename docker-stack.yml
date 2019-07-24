@@ -4,7 +4,7 @@ services:
   redis:
     image: redis:alpine
     networks:
-      - traefik_public
+      - backend
     deploy:
       replicas: 1
       update_config:
@@ -17,7 +17,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
-      - traefik_public
+      - backend
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -27,6 +27,7 @@ services:
       - 80
     networks:
       - traefik_public
+      - backend
     depends_on:
       - redis
     deploy:
@@ -45,6 +46,7 @@ services:
       - 80
     networks:
       - traefik_public
+      - backend
     depends_on:
       - db
     deploy:
@@ -63,6 +65,7 @@ services:
     image: dockersamples/examplevotingapp_worker
     networks:
       - traefik_public
+      - backend
     deploy:
       mode: replicated
       replicas: 1
@@ -79,6 +82,7 @@ services:
     image: dockersamples/visualizer:stable
     networks:
       - traefik_public
+      - backend
     ports:
       - "8080"
     stop_grace_period: 1m30s
@@ -93,8 +97,6 @@ services:
         - traefik.port=9090
 
 networks:
-  frontend:
-    driver: overlay
   backend:
     driver: overlay
   traefik_public:
